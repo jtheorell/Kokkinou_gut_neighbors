@@ -2,15 +2,15 @@
 #uses a more conservative method of defining DA regions, so it might be 
 #more amenable to statistical findings actually. 
 library(DAseq)
+library(SingleCellExperiment)
+
 metaData <- readRDS("Data/metaData.rds")
-pcaData <- readRDS("Data/pcaData.rds")
 umapData <- readRDS("Data/umapData.rds")
-rnaScaleData <- readRDS("Data/rnaScaleData.rds")
+logCountsRed <- readRDS("Data/rnaScaleData.rds")
+harmonyData <- readRDS("Data/harmonyData.rds")
 
 python2use <- "/Users/jakob.theorell/Library/r-miniconda/envs/r-reticulate/bin/python"
 GPU <- 8
-
-logCountsRed <- Matrix(rnaScaleData)
 
 allSce <- SingleCellExperiment(assays = list(logcounts = logCountsRed), 
                                colData = metaData)
@@ -28,7 +28,8 @@ highLowSce <- allSce[,which(donInflam %in% c( "D1Noninflamed", "D16Noninflamed",
 highLowSce$Inflam <- "Low"
 highLowSce$Inflam[which(highLowSce$CHASTea > 3)] <- "High"
 table(highLowSce$Inflam)
-
+#High   Low 
+#12701 15515 
 
 label_low <- unique(highLowSce$donor[which(highLowSce$Inflam == "Low")])
 label_high <- unique(highLowSce$donor[which(highLowSce$Inflam == "High")])
