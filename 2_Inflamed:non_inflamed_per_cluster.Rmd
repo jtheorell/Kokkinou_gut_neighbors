@@ -1,0 +1,51 @@
+---
+title: "Identification of cluster numbers for supplementary fig 5"
+author: "Jakob Theorell"
+date: "2022-12-12"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Import
+
+
+```{r}
+meta.data <- read.csv("Complete_metadata.csv", row.names = 1)
+dim(meta.data)
+
+#Here, we convert the clusters to factor
+meta.data$clusters_louvain_subset1 <- as.factor(meta.data$clusters_louvain_subset1)
+#Here, we exclude all non-inflamed, using the pre-defined subset, that includes
+#information both about the CHAS score and the number of samples in the surrounding 
+#neighbor cloud.
+nonInflamDat <- meta.data[which(meta.data$NonInflam),]
+
+#And now we generate a table with this: 
+nonInfTab <- table(nonInflamDat$clusters_louvain_subset1, 
+      paste0(nonInflamDat$donor1, "_", nonInflamDat$Tissue))
+nonInfTab
+#This table is now further exported
+write.table(nonInfTab, "Data_files/Non_inflamed_per_cluster.txt",
+      sep = "\t", row.names = FALSE)
+```
+
+
+Now the same is done with the ≥9 cells: 
+
+```{r}
+
+inflamDat <- meta.data[which(meta.data$Inflam),]
+
+#And now we generate a table with this: 
+infTab <- table(inflamDat$clusters_louvain_subset1, 
+      paste0(inflamDat$donor1, "_", inflamDat$Tissue))
+infTab
+#This table is now further exported
+write.table(infTab, "Data_files/Inflamed_per_cluster.txt",
+      sep = "\t", row.names = FALSE)
+```
+
+So that should be it. 
